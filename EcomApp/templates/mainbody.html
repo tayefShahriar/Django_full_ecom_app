@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}
+    {{ setting.title }}
+{% endblock title %}
+{% block description %}
+    {{ setting.description }}
+{% endblock description %}
+{% block keyword %}
+
+{% endblock keyword %}
+{% block header %}
+    {% include "header.html" %}
+{% endblock header %}
+<!-- Header Area End Here -->
+<!-- Begin Slider With Banner Area -->
+{% block sidebar %}
+
+{% endblock sidebar %}
+{% block slider %}
+    {% include "slider.html" %}
+{% endblock slider %}
+{% block mainbody %}
+    {% include "content.html" %}
+{% endblock %}
+<!-- Begin Footer Area -->
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock footer %}
