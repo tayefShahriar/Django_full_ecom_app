@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}
+    single product
+{% endblock title %}
+{% block description %}
+    {{ setting.description }}
+{% endblock description %}
+{% block keyword %}
+
+{% endblock keyword %}
+{% block header %}
+    {% include "header.html" %}
+{% endblock header %}
+{% block another_content %}
+<div class="about-us-wrapper pt-60 pb-40">
+                <div class="container">
+                    <div class="row">
+                        <!-- About Text Start -->
+                        <div class="col-lg-6 order-last order-lg-first">
+                            <div class="about-text-wrap">
+                                <h2><span>{{setting.title}}</span>{{setting.keyword}}</h2>
+                                <p>{{setting.description}}</p>
+                                <p>{{setting.description}}</p>
+                                <p>{{setting.description}}</p>
+                            </div>
+                        </div>
+                        <!-- About Text End -->
+                        <!-- About Image Start -->
+                        <div class="col-lg-5 col-md-10">
+                            <div class="">
+                                <img class="img-full" src="{{setting.icon.url}}" alt="About Us" />
+                            </div>
+                        </div>
+                        <!-- About Image End -->
+                    </div>
+                </div>
+            </div>
+{% endblock another_content %}
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock footer %}
