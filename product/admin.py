@@ -1,7 +1,7 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
 # Register your models here.
-from product.models import Category, Product, Images
+from product.models import Category, Product, Images, Comment
 
 class CategoryAdmin(DraggableMPTTAdmin):
     mptt_indent_field = "title"
@@ -50,6 +50,11 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug':('title',)}
     inlines = [ProductImageInline]
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['product', 'status', 'created_at', 'updated_at', 'user']
+    list_filter = ['status', 'created_at']
+    list_per_page = 10
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Images)
+admin.site.register(Comment, CommentAdmin)

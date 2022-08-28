@@ -62,20 +62,20 @@ single product
 
       <!--start from here-->
       <div class="page-section mb-60">
-          <div class="container">
-              <div class="row">
-                  <div class="col-sm-12 col-md-12 col-xs-12 col-lg-3 mb-30">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-xs-12 col-lg-6 mb-30">
                       <h1 class="font-weight-bold">User Panel</h1>
-
+                            {% include 'user_panel.html' %}
                   </div>
-                  <div class="col-sm-12 col-md-12 col-lg-9 col-xs-12">
+                  <div class="col-sm-12 col-md-12 col-lg-6 col-xs-12">
                       <h1 class="text-center font-weight-bold">User Details</h1>
                       <table class="shopping-cart-table table">
                           <tr>
                               <th class="text-left">
-                                  <a href="{% url 'user_update' %}" class="primary-btn">Update Profile</a>
+                                  <a href="{% url 'user_update' %}" class="btn btn-primary">Update Profile</a>
                                   &nbsp; &nbsp; &nbsp;
-                                  <a href="{% url 'user_password' %}" class="primary-btn">Change Password</a>
+                                  <a href="{% url 'user_password' %}" class="btn btn-primary">Change Password</a>
                               </th>
                               <td><img src="{{ profile.imageUrl}}"
                                       style="border-radius:10px; height: 100px;width:100px; ">

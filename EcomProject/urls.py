@@ -22,6 +22,7 @@ urlpatterns = [
     path("", include('EcomApp.urls')),
     path("order/", include('OrderApp.urls')),
     path("user/", include('UserApp.urls')),
+    path("product/", include('product.urls')),
 ]
 
 if settings.DEBUG:
