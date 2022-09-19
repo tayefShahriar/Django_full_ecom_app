@@ -32,6 +32,12 @@ class Product(models.Model):
         ('True', 'True'),
         ('False', 'False'),
     )
+    VARIANTS = (
+        ('Name', 'Name'),
+        ('Size', 'Size'),
+        ('Color', 'Color'),
+        ('Size-Color', 'Size-Color'),
+    )
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     keywords = models.CharField(max_length=100)
@@ -40,6 +46,7 @@ class Product(models.Model):
     old_price = models.DecimalField(decimal_places=2, max_digits=15)
     amount = models.IntegerField(default=0)
     min_amount = models.IntegerField(default=3)
+    variant = models.CharField(max_length=20, choices=VARIANTS, default='None')
     detail = models.TextField()
     status = models.CharField(max_length=20, choices=status)
     slug = models.SlugField(null=True, unique=True)
@@ -111,3 +118,50 @@ class CommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['subject', 'comment', 'rate']
+
+class Color(models.Model):
+    name = models.CharField(max_length=200, blank=True)
+    code = models.CharField(max_length=60, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    def color_tag(self):
+        if self.code is not None:
+            return mark_safe('<p style="background-color:{}">Color</p>'.format(self.code))
+        else:
+            return ""
+
+class Size(models.Model):
+    name = models.CharField(max_length=200, blank=True)
+    code = models.CharField(max_length=60, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Variants(models.Model):
+    title = models.CharField(max_length=200, blank=True, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+    size = models.ForeignKey(Size, on_delete=models.CASCADE)
+    image_id = models.IntegerField(blank=True, null=True, default=0)
+    quantity = models.IntegerField(blank=True, null=True, default=1)
+    price = models.FloatField(default=0)
+
+    def __str__(self):
+        return self.title
+
+    def image(self):
+        img = Images.objects.get(id=self.image_id)
+        if img.id is not None:
+            variant_image = img.image.url
+        else:
+            variant_image = ""
+        return variant_image
+
+    def image_tag(self):
+        img = Images.objects.get(id=self.image_id)
+        if img.id is not None:
+            return mark_safe('<img src="{}" height="50px"/>'.format(img.image.url))
+        else:
+            return ""

@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse
-from EcomApp.models import Setting, ContactMessage, ContactForm
-from product.models import Product, Images, Category, Comment
+from EcomApp.models import Setting, ContactMessage, ContactForm, FAQ
+from product.models import Product, Images, Category, Comment, Color, Size, Variants
 from EcomApp.forms import SearchForm
 from OrderApp.models import ShopCart
 # Create your views here.
@@ -13,16 +13,13 @@ def Home(request):
         total_amount += p.product.new_price * p.quantity
         quant += p.quantity
 
-    category = Category.objects.all()
-    setting = Setting.objects.get(id = 1)
     sliding_images = Product.objects.all().order_by('id')[:3]
     latest_products = Product.objects.all().order_by('-id')
     products = Product.objects.all()
 
 
     context = {
-        'category': category,
-        'setting': setting,
+
         'sliding_images': sliding_images,
         'latest_products': latest_products,
         'products': products,
@@ -33,40 +30,62 @@ def Home(request):
     return render(request, 'mainbody.html', context)
 
 def about(request):
-    category = Category.objects.all()
-    setting = Setting.objects.get(id=1)
     context = {
-        'setting': setting,
-        'category': category,
     }
     return render(request, 'about.html', context)
 
 def product_single(request, id):
-    category = Category.objects.all()
-    setting = Setting.objects.get(id=1)
     single_product = Product.objects.get(id=id)
     images = Images.objects.filter(product_id = id)
     products = Product.objects.all().order_by('id')[:4]
     comment_show = Comment.objects.filter(product_id=id, status=True)
     context = {
-        'category': category,
         'single_product': single_product,
-        'setting': setting,
         'images': images,
         'products': products,
         'comment_show': comment_show,
     }
+    if product.variant != "None":
+        if request.method == 'POST':
+            variant_id = request.POST.get('variantid')
+            variant = Variants.objects.get(id=variant_id)
+            colors = Variants.objects.filter(product_id=id, size_id=variant.size_id)
+            sizes = Variants.objects.raw('SELECT * FROM product_variants WHERE product_id=%s GROUP BY size_id', [id])
+            query += variant.title+' Size:' + str(variant.size) + ' Color:' + str(variant.color)
+        else:
+            variants = Variants.objects.filter(product_id=id)
+            colors = Variants.objects.filter(product_id=id, size_id=variants[0].size-id)
+            sizes = Variants.objects.raw('SELECT * FROM product_variants WHERE product_id=%s GROUP BY size_id', [id])
+            variant = Variants.objects.get(id=variants[0].id)
+        context.update({
+            'sizes': sizes,
+            'colors': colors,
+            'variant': variant,
+            'query': query,
+        })
+
     return render(request, 'product_single.html', context)
 
+def ajaxcolor(request):
+    data = {}
+    if request.POST.get('action' == 'post'):
+        size_id = request.POST.get('size')
+        productid = request.POST.get('productid')
+        colors = Variants.objects.filter(product_id=productid, size_id=size_id)
+        context = {
+            'size_id': size_id,
+            'productid': productid,
+            'colors': colors,
+        }
+        data = {'render_table': render_to_string('color_list.html', context=context)}
+        return JsonResponse(data)
+    return JsonResponse(data)
+
 def category_product(request, id, slug):
-    category = Category.objects.all()
     sliding_images = Product.objects.all().order_by('id')[:3]
-    setting = Setting.objects.get(id=1)
     product_cat = Product.objects.filter(category_id = id)
     context = {
         'product_cat': product_cat,
-        'category': category,
-        'setting': setting,
         'sliding_images': sliding_images,
     }
     return render(request, 'category_products.html', context)
@@ -85,12 +104,8 @@ def contact(request):
             #messages.success(request, 'Your message has been sent.')
             return HttpResponseRedirect(reverse('contact_dat'))
 
-    setting = Setting.objects.get(pk=1)
     form = ContactForm
-    category = Category.objects.all()
     context = {
-        'setting': setting,
-        'category': category,
         'form': form,
     }
     return render(request, 'contact_form.html', context)
@@ -105,15 +120,18 @@ def SearchView(request):
                 products = Product.objects.filter(title__icontains=query)
             else:
                 products = Product.objects.filter(title__icontains=query, category_id=cat_id)
-            category = Category.objects.all()
             sliding_images = Product.objects.all().order_by('id')[:2]
-            setting = Setting.objects.get(pk=1)
             context = {
-                'category': category,
                 'query': query,
                 'product_cat': products,
                 'sliding_images': sliding_images,
-                'setting': setting,
             }
             return render(request, 'category_products.html', context)
         return HttpResponseRedirect('category_product')
+
+def faq_details(request):
+    faq = FAQ.objects.filter(status=True).order_by('created_at')
+    context = {
+        'faq': faq,
+    }
+    return render(request, 'faq.html', context)
